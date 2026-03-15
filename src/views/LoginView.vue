@@ -161,9 +161,11 @@ async function login() {
 
 .logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: var(--space-md);
   margin-bottom: var(--space-3xl);
+  text-align: center;
 }
 
 .logo-name {
