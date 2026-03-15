@@ -2,6 +2,9 @@
 
 A Spotify-style music player frontend for [Jellyfin](https://jellyfin.org/), built with Vue 3 + Vite. Warm luxury aesthetic — dark browns, gold accents, Playfair Display headings.
 
+![Player](screenshots/player.png)
+![Login](screenshots/login.png)
+
 ## Requirements
 
 - A running Jellyfin server (any version with music library)
