@@ -1,0 +1,7 @@
+services:
+  jellyplay:
+    build: .
+    container_name: jellyplay
+    ports:
+      - "8080:80"
+    restart: unless-stopped
