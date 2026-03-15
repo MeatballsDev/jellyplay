@@ -5,10 +5,46 @@ A Spotify-style music player frontend for [Jellyfin](https://jellyfin.org/), bui
 ## Requirements
 
 - A running Jellyfin server (any version with music library)
-- Node.js 18+
 - (Optional) [Lidarr](https://lidarr.audio/) for downloading new music
 
-## Getting started
+## Deployment
+
+### Portainer (easiest)
+
+Go to **Stacks → Add stack**, paste the following and click **Deploy the stack**:
+
+```yaml
+services:
+  jellyplay:
+    build: https://github.com/MeatballsDev/jellyplay.git
+    container_name: jellyplay
+    ports:
+      - "4949:80"
+    restart: unless-stopped
+```
+
+App will be available at `http://yourserver:4949`.
+
+To update: pull the latest from git on your server and rebuild, or edit and re-deploy the stack in Portainer.
+
+### Docker Compose (manual)
+
+```bash
+git clone https://github.com/MeatballsDev/jellyplay.git
+cd jellyplay
+docker compose up -d
+```
+
+To update after new changes:
+
+```bash
+git pull
+docker compose up -d --build
+```
+
+### Local development
+
+Requires Node.js 18+.
 
 ```bash
 npm install
