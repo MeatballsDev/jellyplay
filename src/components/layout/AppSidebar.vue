@@ -145,7 +145,6 @@ function logout() {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  padding-bottom: var(--nowplaying-height);
   position: relative;
 }
 
@@ -341,8 +340,10 @@ function logout() {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-md) var(--space-md);
+  padding: 0 var(--space-md);
+  height: var(--nowplaying-height);
   border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .user-info {
