@@ -19,31 +19,13 @@ JellyPlay is a web app that connects to your Jellyfin media server and gives you
 
 ## Installation
 
-### Portainer (recommended)
-
-If you're running Portainer, go to **Stacks → Add stack**, give it a name, paste the following and click **Deploy the stack**:
-
-```yaml
-services:
-  jellyplay:
-    build: https://github.com/MeatballsDev/jellyplay.git
-    container_name: jellyplay
-    ports:
-      - "4949:80"
-    restart: unless-stopped
-```
-
-JellyPlay will be available at `http://yourserver:4949`.
-
-To update to the latest version, just re-deploy the stack.
-
-### Docker Compose
-
 ```bash
 git clone https://github.com/MeatballsDev/jellyplay.git
 cd jellyplay
 docker compose up -d
 ```
+
+JellyPlay will be available at `http://yourserver:4949`.
 
 To update:
 
