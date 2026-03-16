@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import NowPlayingBar from '@/components/layout/NowPlayingBar.vue'
@@ -12,12 +12,18 @@ import { useAuthStore } from '@/stores/auth'
 import { usePlaylistStore } from '@/stores/playlist'
 
 const route   = useRoute()
+const router  = useRouter()
 const auth    = useAuthStore()
 const plStore = usePlaylistStore()
 
 watch(() => auth.isLoggedIn, (loggedIn) => {
   if (loggedIn) plStore.loadPlaylists()
 }, { immediate: true })
+
+// Validate stored token on startup — redirects to login if stale
+auth.validateSession().then(valid => {
+  if (!valid && route.name !== 'login') router.push({ name: 'login' })
+})
 const isLoginPage = () => route.name === 'login'
 
 const searchBarRef    = ref(null)

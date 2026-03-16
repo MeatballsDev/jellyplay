@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { getCurrentUser } from '@/api/auth'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token    = ref(localStorage.getItem('jp_token')    || '')
-  const serverUrl = ref(localStorage.getItem('jp_server')  || '')
-  const userId   = ref(localStorage.getItem('jp_userId')   || '')
-  const username = ref(localStorage.getItem('jp_username') || '')
+  const token     = ref(localStorage.getItem('jp_token')    || '')
+  const serverUrl = ref(localStorage.getItem('jp_server')   || '')
+  const userId    = ref(localStorage.getItem('jp_userId')   || '')
+  const username  = ref(localStorage.getItem('jp_username') || '')
 
   const isLoggedIn = computed(() => !!token.value && !!serverUrl.value)
 
@@ -20,6 +21,17 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('jp_username', n)
   }
 
+  async function validateSession() {
+    if (!token.value || !serverUrl.value) return false
+    try {
+      await getCurrentUser(serverUrl.value, token.value)
+      return true
+    } catch {
+      logout()
+      return false
+    }
+  }
+
   function logout() {
     token.value     = ''
     serverUrl.value = ''
@@ -31,5 +43,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('jp_username')
   }
 
-  return { token, serverUrl, userId, username, isLoggedIn, setAuth, logout }
+  return { token, serverUrl, userId, username, isLoggedIn, setAuth, logout, validateSession }
 })

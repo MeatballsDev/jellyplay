@@ -44,6 +44,8 @@ function shufflePlay() {
 }
 
 // ── Drag-to-reorder ──────────────────────────────────────────────────────────
+const DRAG_THRESHOLD = 6
+
 const rowEls     = ref([])
 const dragFrom   = ref(null)
 const dropBefore = ref(null)
@@ -57,42 +59,52 @@ function setRowEl(el, i) {
 function startDrag(e, i) {
   if (e.button !== 0) return
   e.preventDefault()
-  dragFrom.value   = i
-  dropBefore.value = i
-  dragPos.value    = { x: e.clientX, y: e.clientY }
+
+  const startX = e.clientX
+  const startY = e.clientY
+  let activated = false
+
+  function onMouseMove(e) {
+    const dx = e.clientX - startX
+    const dy = e.clientY - startY
+    if (!activated) {
+      if (Math.sqrt(dx * dx + dy * dy) < DRAG_THRESHOLD) return
+      activated        = true
+      dragFrom.value   = i
+      dropBefore.value = i
+    }
+    dragPos.value = { x: e.clientX, y: e.clientY }
+    const rows = rowEls.value
+    let before = rows.length
+    for (let j = 0; j < rows.length; j++) {
+      const rect = rows[j].getBoundingClientRect()
+      if (e.clientY < rect.top + rect.height / 2) { before = j; break }
+    }
+    dropBefore.value = before
+  }
+
+  function onMouseUp() {
+    window.removeEventListener('mousemove', onMouseMove)
+    window.removeEventListener('mouseup',   onMouseUp)
+    if (activated && dragFrom.value !== null && dropBefore.value !== null) {
+      const from     = dragFrom.value
+      const before   = dropBefore.value
+      const insertAt = from < before ? before - 1 : before
+      if (from !== insertAt) {
+        plStore.reorderTrack(playlist.value.id, from, insertAt)
+      }
+    }
+    dragFrom.value   = null
+    dropBefore.value = null
+  }
+
   window.addEventListener('mousemove', onMouseMove)
   window.addEventListener('mouseup',   onMouseUp)
 }
 
-function onMouseMove(e) {
-  dragPos.value = { x: e.clientX, y: e.clientY }
-  const rows = rowEls.value
-  let before = rows.length
-  for (let i = 0; i < rows.length; i++) {
-    const rect = rows[i].getBoundingClientRect()
-    if (e.clientY < rect.top + rect.height / 2) { before = i; break }
-  }
-  dropBefore.value = before
-}
-
-function onMouseUp() {
-  window.removeEventListener('mousemove', onMouseMove)
-  window.removeEventListener('mouseup',   onMouseUp)
-  if (dragFrom.value !== null && dropBefore.value !== null) {
-    const from     = dragFrom.value
-    const before   = dropBefore.value
-    const insertAt = from < before ? before - 1 : before
-    if (from !== insertAt) {
-      plStore.reorderTrack(playlist.value.id, from, insertAt)
-    }
-  }
+onUnmounted(() => {
   dragFrom.value   = null
   dropBefore.value = null
-}
-
-onUnmounted(() => {
-  window.removeEventListener('mousemove', onMouseMove)
-  window.removeEventListener('mouseup',   onMouseUp)
 })
 </script>
 
