@@ -5,6 +5,7 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import NowPlayingBar from '@/components/layout/NowPlayingBar.vue'
 import QueuePanel from '@/components/player/QueuePanel.vue'
+import NowPlayingOverlay from '@/components/player/NowPlayingOverlay.vue'
 import ToastNotification from '@/components/common/ToastNotification.vue'
 import { useKeyboard } from '@/composables/useKeyboard'
 import { useAuthStore } from '@/stores/auth'
@@ -19,9 +20,10 @@ watch(() => auth.isLoggedIn, (loggedIn) => {
 }, { immediate: true })
 const isLoginPage = () => route.name === 'login'
 
-const searchBarRef  = ref(null)
-const eqPanelOpen   = ref(false)
-const queuePanelOpen = ref(false)
+const searchBarRef    = ref(null)
+const eqPanelOpen     = ref(false)
+const queuePanelOpen  = ref(false)
+const nowPlayingOpen  = ref(false)
 
 function focusSearch() {
   searchBarRef.value?.focus()
@@ -35,6 +37,10 @@ function toggleEQ() {
 function toggleQueue() {
   queuePanelOpen.value = !queuePanelOpen.value
   if (queuePanelOpen.value) eqPanelOpen.value = false
+}
+
+function toggleNowPlaying() {
+  nowPlayingOpen.value = !nowPlayingOpen.value
 }
 
 useKeyboard({ onSearchFocus: focusSearch, onEQToggle: toggleEQ })
@@ -67,9 +73,19 @@ useKeyboard({ onSearchFocus: focusSearch, onEQToggle: toggleEQ })
       <NowPlayingBar
         :eq-open="eqPanelOpen"
         :queue-open="queuePanelOpen"
+        :now-playing-open="nowPlayingOpen"
         @toggle-eq="toggleEQ"
         @toggle-queue="toggleQueue"
+        @toggle-now-playing="toggleNowPlaying"
       />
+
+      <!-- Full-screen now playing overlay -->
+      <Transition name="np-fade">
+        <NowPlayingOverlay
+          v-if="nowPlayingOpen"
+          @close="nowPlayingOpen = false"
+        />
+      </Transition>
     </template>
 
     <template v-else>
@@ -123,5 +139,17 @@ useKeyboard({ onSearchFocus: focusSearch, onEQToggle: toggleEQ })
 .slide-right-enter-from,
 .slide-right-leave-to {
   transform: translateX(100%);
+}
+
+/* Now playing overlay transition */
+.np-fade-enter-active,
+.np-fade-leave-active {
+  transition: opacity var(--duration-slower) var(--ease-default),
+              transform var(--duration-slower) var(--ease-default);
+}
+.np-fade-enter-from,
+.np-fade-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
 }
 </style>

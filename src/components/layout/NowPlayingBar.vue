@@ -10,8 +10,8 @@ import VolumeControl from '@/components/player/VolumeControl.vue'
 import TrackInfo from '@/components/player/TrackInfo.vue'
 import EqualizerPanel from '@/components/equalizer/EqualizerPanel.vue'
 
-const props  = defineProps({ eqOpen: Boolean, queueOpen: Boolean })
-const emit   = defineEmits(['toggle-eq', 'toggle-queue'])
+const props  = defineProps({ eqOpen: Boolean, queueOpen: Boolean, nowPlayingOpen: Boolean })
+const emit   = defineEmits(['toggle-eq', 'toggle-queue', 'toggle-now-playing'])
 
 const player  = usePlayerStore()
 const library = useLibraryStore()
@@ -108,6 +108,19 @@ function onError() {
 
       <!-- Right: Volume + Queue + EQ toggle -->
       <div class="bar-right">
+        <button
+          class="eq-toggle"
+          :class="{ active: nowPlayingOpen }"
+          title="Full screen"
+          @click="emit('toggle-now-playing')"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"/>
+            <polyline points="9 21 3 21 3 15"/>
+            <line x1="21" y1="3" x2="14" y2="10"/>
+            <line x1="3"  y1="21" x2="10" y2="14"/>
+          </svg>
+        </button>
         <VolumeControl />
         <button
           class="eq-toggle"
