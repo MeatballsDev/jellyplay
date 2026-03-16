@@ -135,7 +135,8 @@ function onError() {
         </button>
         <button
           class="eq-toggle"
-          :class="{ active: nowPlayingOpen }"
+          :class="{ active: nowPlayingOpen, disabled: !player.currentTrack }"
+          :disabled="!player.currentTrack"
           title="Full screen"
           @click="emit('toggle-now-playing')"
         >
@@ -212,5 +213,15 @@ function onError() {
 .eq-toggle.active {
   color: var(--color-accent);
   background: var(--color-accent-dim);
+}
+
+.eq-toggle.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.eq-toggle.disabled:hover {
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
 }
 </style>
