@@ -109,18 +109,28 @@ watch(() => player.isPlaying, (playing) => {
 // ─── Keyboard ───────────────────────────────────────────────────────────────
 
 function onKeyDown(e) {
-  if (e.key === 'Escape') emit('close')
+  // Escape is handled via fullscreenchange (browser exits FS first, then we close)
+  if (e.key === 'Escape' && !document.fullscreenElement) emit('close')
+}
+
+function onFullscreenChange() {
+  // If the user exited fullscreen (F11 or Esc in native FS), close the overlay
+  if (!document.fullscreenElement) emit('close')
 }
 
 onMounted(() => {
   draw()
   if (player.isPlaying) rafId = requestAnimationFrame(draw)
   window.addEventListener('keydown', onKeyDown)
+  document.documentElement.requestFullscreen?.().catch(() => {})
+  document.addEventListener('fullscreenchange', onFullscreenChange)
 })
 
 onUnmounted(() => {
   cancelAnimationFrame(rafId)
   window.removeEventListener('keydown', onKeyDown)
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
+  if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
 })
 </script>
 
